@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/icon">
         <file alias="icon_play">res/icon_play.svg</file>
+        <file alias="icon_add">res/icon_add.svg</file>
+        <file alias="brush_add">res/brush_add.png</file>
+        <file alias="icon_next">res/icon_next.svg</file>
+        <file alias="icon_pause">res/icon_pause.svg</file>
+        <file alias="icon_prev">res/icon_prev.svg</file>
+        <file alias="icon_stop">res/icon_stop.svg</file>
     </qresource>
 </RCC>

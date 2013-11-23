@@ -3,8 +3,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->setGeometry(200, 100, 600, 600);
+    this->setGeometry(200, 100, 500, 400);
 //    this->setWindowFlags(Qt::FramelessWindowHint);
+
+    m_pMusicView = new CMusicView(this);
 
     m_pFileMenu = this->menuBar()->addMenu("&File");
 
@@ -12,7 +14,19 @@ MainWindow::MainWindow(QWidget *parent)
     m_pOpenAct->setText("&Open Music");
     m_pOpenAct->setShortcut(QString("Ctrl+O"));
     connect(m_pOpenAct, SIGNAL(triggered()), \
-            this, SLOT(SLOT_OpenMusicProc()));
+            m_pMusicView, SLOT(SLOT_LoadMusicProc()));
+
+    m_pLoadPlayListAct = new QAction(this);
+    m_pLoadPlayListAct->setText("&Load Playlist");
+    m_pLoadPlayListAct->setShortcut(QString("Ctrl+L"));
+    connect(m_pLoadPlayListAct, SIGNAL(triggered()),\
+            m_pMusicView, SLOT(SLOT_LoadPlayListProc()));
+
+    m_pSavePlayListAct = new QAction(this);
+    m_pSavePlayListAct->setText("&Save Playlist");
+    m_pSavePlayListAct->setShortcut(QString("Ctrl+S"));
+    connect(m_pSavePlayListAct, SIGNAL(triggered()),\
+            m_pMusicView, SLOT(SLOT_SavePlayListProc()));
 
     m_pExitAct = new QAction(this);
     m_pExitAct->setShortcut(QKeySequence::Quit);
@@ -21,18 +35,15 @@ MainWindow::MainWindow(QWidget *parent)
             this, SLOT(close()));
 
     m_pFileMenu->addAction(m_pOpenAct);
+    m_pFileMenu->addAction(m_pLoadPlayListAct);
+    m_pFileMenu->addAction(m_pSavePlayListAct);
+    m_pFileMenu->addSeparator();
     m_pFileMenu->addAction(m_pExitAct);
 
-    m_pMusicView = new CMusicView(this);
     this->setCentralWidget(m_pMusicView);
 }
 
 MainWindow::~MainWindow()
 {
     
-}
-
-void MainWindow::SLOT_OpenMusicProc()
-{
-    m_pMusicView->SLOT_LoadMusicProc();
 }

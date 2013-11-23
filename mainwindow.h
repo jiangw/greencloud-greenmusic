@@ -18,12 +18,11 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots:
-    void SLOT_OpenMusicProc();
-
 private:
     QMenu* m_pFileMenu;
     QAction* m_pOpenAct;
+    QAction* m_pLoadPlayListAct;
+    QAction* m_pSavePlayListAct;
     QAction* m_pExitAct;
 
     CMusicView* m_pMusicView;

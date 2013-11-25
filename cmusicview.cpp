@@ -310,6 +310,31 @@ void CMusicView::SLOT_LoadPlayListProc()
     }
 }
 
+void CMusicView::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget *a_pWhoAmI)
+{
+    if("CImgWidget" == a_pWhoAmI->WidgetClassName()\
+            && m_pCover->contains(m_pCover->mapFromScene(a_CMouseScenePos)))
+    {
+        int l_iMusicIdx = m_pPlayListView->IndexOf(a_pWhoAmI);
+        if(-1 != l_iMusicIdx)
+        {
+            QList<SMusic *>* l_CQueue = m_CPlayList.GetPlayList();
+            SMusic* l_pMusic = l_CQueue->at(l_iMusicIdx);
+            this->OpenMusic(l_pMusic->m_qstrMusicFile, true);
+            m_pMusicTitle->SetText(l_pMusic->m_qstrMusicTitle);
+            m_pArtistName->SetText(l_pMusic->m_qstrArtist);
+            m_pCover->SetImg(l_pMusic->m_qstrCoverImgFile);
+            m_pArtistPhoto->SetImg(l_pMusic->m_qstrArtistPhotoFile);
+
+            //update play queue
+            for(int i=l_iMusicIdx+1; i<l_CQueue->length(); i++)
+            {
+                this->AppendMusic((l_CQueue->at(i))->m_qstrMusicFile);
+            }
+        }
+    }
+}
+
 void CMusicView::AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
                                                 QString a_qstrMusicTitle,\
                                                 QString a_qstrArtist)
@@ -320,4 +345,6 @@ void CMusicView::AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
     l_pNewMusicShortCut->setToolTip(\
                 QString("%1 - %2").arg(a_qstrMusicTitle).arg(a_qstrArtist));
     m_pPlayListView->AddWidget(l_pNewMusicShortCut);
+    connect(l_pNewMusicShortCut, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
+            this, SLOT(SLOT_MouseDragDropProc(QPointF,CGraphicsWidget*)));
 }

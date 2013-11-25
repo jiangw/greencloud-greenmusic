@@ -45,6 +45,8 @@ public slots:
     void SLOT_SavePlayListProc();
     void SLOT_LoadPlayListProc();
 
+    void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
+
 private:
     void AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
                                         QString a_qstrMusicTitle,\

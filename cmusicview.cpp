@@ -3,9 +3,11 @@
 CMusicView::CMusicView(QWidget *a_pParent)
     :QGraphicsView(a_pParent)
 {
+    m_iMusicShortCutSize = 60;
+
     m_pScene = new QGraphicsScene(a_pParent);
-    m_pScene->setBackgroundBrush(Qt::lightGray);
-    m_pScene->setSceneRect(-250, -250, 500, 500);
+    m_pScene->setBackgroundBrush(QBrush(QPixmap(QString(":/img/sceneback"))));
+    m_pScene->setSceneRect(-500, -500, 1000, 1000);
     this->setScene(m_pScene);
 
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -26,15 +28,16 @@ CMusicView::CMusicView(QWidget *a_pParent)
     connect(m_pMusicTitle, SIGNAL(SIGNAL_MouseDoubleClicked()),\
             this, SLOT(SLOT_LoadMusicProc()));
 
-    m_pCover = new CImgWidget(200, 200, NULL);
+    m_pCover = new CImgWidget(300, 300, NULL);
     m_pScene->addItem(m_pCover);
     m_pCover->setPos(-200, -200);
     connect(m_pCover, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_LoadMusicCoverProc()));
 
-    m_pArtistPhoto = new CImgWidget(80, 80, NULL);
+    m_pArtistPhoto = new CImgWidget(120, 120, NULL);
     m_pScene->addItem(m_pArtistPhoto);
-    m_pArtistPhoto->setPos(10, -200);
+    m_pArtistPhoto->setPos(m_pCover->pos().x() + m_pCover->boundingRect().width() + 10,\
+                           -200);
     connect(m_pArtistPhoto, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_LoadArtistPhotoProc()));
 
@@ -42,7 +45,8 @@ CMusicView::CMusicView(QWidget *a_pParent)
     m_pArtistName->SetFont(m_CArtistNameFont);
     m_pArtistName->setVisible(false);
     m_pArtistName->SetWidgetOutline(false);
-    m_pArtistName->setPos(10, -120);
+    m_pArtistName->setPos(m_pArtistPhoto->pos().x(),\
+                          m_pArtistPhoto->pos().y() + m_pArtistPhoto->boundingRect().height());
     m_pScene->addItem(m_pArtistName);
 
     int l_iSize = 30;
@@ -50,38 +54,40 @@ CMusicView::CMusicView(QWidget *a_pParent)
     int l_iY = 20;
 
     m_pPrevBtn = new CSvgWidget(":/icon/icon_prev", l_iSize * 1.5, l_iSize, NULL);
-    m_pPrevBtn->setPos(m_pCover->pos().x(), l_iY);
+    m_pPrevBtn->setPos(m_pCover->pos().x(),\
+                       m_pCover->pos().y() + m_pCover->boundingRect().height() + l_iY);
     m_pScene->addItem(m_pPrevBtn);
     connect(m_pPrevBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_MusicPrevProc()));
 
     m_pStopBtn = new CSvgWidget(":/icon/icon_stop", l_iSize, l_iSize, NULL);
     m_pStopBtn->setPos(m_pPrevBtn->pos().x() + m_pPrevBtn->boundingRect().width() + l_iInterval,\
-                       l_iY);
+                       m_pPrevBtn->pos().y());
     m_pScene->addItem(m_pStopBtn);
     connect(m_pStopBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_MusicStopProc()));
 
     m_pPlayBtn = new CSvgWidget(":/icon/icon_play", l_iSize, l_iSize, NULL);
-    m_pPlayBtn->setPos(m_pStopBtn->pos().x() + l_iSize + l_iInterval, l_iY);
+    m_pPlayBtn->setPos(m_pStopBtn->pos().x() + l_iSize + l_iInterval, m_pPrevBtn->pos().y());
     m_pScene->addItem(m_pPlayBtn);
     connect(m_pPlayBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_MusicPlayProc()));
 
     m_pPauseBtn = new CSvgWidget(":/icon/icon_pause", l_iSize, l_iSize, NULL);
-    m_pPauseBtn->setPos(m_pPlayBtn->pos().x() + l_iSize + l_iInterval, l_iY);
+    m_pPauseBtn->setPos(m_pPlayBtn->pos().x() + l_iSize + l_iInterval, m_pPrevBtn->pos().y());
     m_pScene->addItem(m_pPauseBtn);
     connect(m_pPauseBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_MusicPauseProc()));
 
     m_pNextBtn = new CSvgWidget(":/icon/icon_next", l_iSize * 1.5, l_iSize, NULL);
-    m_pNextBtn->setPos(m_pPauseBtn->pos().x() + l_iSize + l_iInterval, l_iY);
+    m_pNextBtn->setPos(m_pPauseBtn->pos().x() + l_iSize + l_iInterval, m_pPrevBtn->pos().y());
     m_pScene->addItem(m_pNextBtn);
     connect(m_pNextBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_MusicNextProc()));
 
     m_pAddBtn = new CSvgWidget(":/icon/icon_add", 25, 25, NULL);
-    m_pAddBtn->setPos(3, -25);
+    m_pAddBtn->setPos(m_pCover->pos().x() + m_pCover->boundingRect().width() + 3,\
+                      m_pCover->pos().y() + m_pCover->boundingRect().height() - 25);
     m_pAddBtn->setToolTip("Add music to playlist");
     m_pScene->addItem(m_pAddBtn);
     connect(m_pAddBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
@@ -99,7 +105,7 @@ CMusicView::CMusicView(QWidget *a_pParent)
                             m_pMusicTitle->pos().y());
     m_pScene->addItem(m_pPlayListView);
 
-    this->centerOn(0, -100);
+    this->centerOn(m_pAddBtn->pos().x() + 50, m_pAddBtn->pos().y() - 80);
 }
 
 void CMusicView::InitPhonon()
@@ -118,6 +124,7 @@ void CMusicView::OpenMusic(QString a_qstrFileName, bool a_blPlay)
 {
     m_pCover->ClearImg();
     m_pArtistPhoto->ClearImg();
+    m_pMediaObj->clearQueue();
 
     m_pMediaObj->setCurrentSource(Phonon::MediaSource(a_qstrFileName));
     if(a_blPlay)
@@ -138,7 +145,7 @@ void CMusicView::AppendMusic(QString a_qstrFileName)
 void CMusicView::OpenPlayList()
 {
     QList<SMusic *>* l_pPlayList = m_CPlayList.GetPlayList();
-    m_pPlayListView->ClearList();
+    m_pPlayListView->ResetWidget();
     m_pMediaObj->clearQueue();
 
     for(int i=0; i<l_pPlayList->length(); i++)
@@ -251,6 +258,19 @@ void CMusicView::SLOT_MusicPrevProc()
 
 void CMusicView::SLOT_MusicNextProc()
 {
+    if(!m_pMediaObj->queue().isEmpty())
+    {
+        Phonon::State l_EPrevState = m_pMediaObj->state();
+        m_pMediaObj->setCurrentSource(m_pMediaObj->queue().at(0));
+        if(l_EPrevState == Phonon::PlayingState)
+        {
+            m_pMediaObj->play();
+        }
+        else
+        {
+            m_pMediaObj->pause();
+        }
+    }
 }
 
 void CMusicView::SLOT_AddMusicToPlayListProc()
@@ -294,7 +314,8 @@ void CMusicView::AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
                                                 QString a_qstrMusicTitle,\
                                                 QString a_qstrArtist)
 {
-    CImgWidget* l_pNewMusicShortCut = new CImgWidget(40, 40, NULL);
+    CImgWidget* l_pNewMusicShortCut = new CImgWidget(m_iMusicShortCutSize, m_iMusicShortCutSize,\
+                                                     NULL);
     l_pNewMusicShortCut->SetImg(a_qstrCoverFile);
     l_pNewMusicShortCut->setToolTip(\
                 QString("%1 - %2").arg(a_qstrMusicTitle).arg(a_qstrArtist));

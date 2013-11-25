@@ -8,4 +8,7 @@
         <file alias="icon_prev">res/icon_prev.svg</file>
         <file alias="icon_stop">res/icon_stop.svg</file>
     </qresource>
+    <qresource prefix="/img">
+        <file alias="/sceneback">res/sceneback.jpg</file>
+    </qresource>
 </RCC>

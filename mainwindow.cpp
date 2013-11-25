@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    this->setGeometry(200, 100, 500, 400);
+    this->setGeometry(200, 100, 800, 550);
 //    this->setWindowFlags(Qt::FramelessWindowHint);
 
     m_pMusicView = new CMusicView(this);

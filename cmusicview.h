@@ -70,6 +70,8 @@ private:
     Phonon::Path m_CMO2AO;
 
     CPlayList m_CPlayList;
+
+    int m_iMusicShortCutSize;
 };
 
 #endif // CMUSICVIEW_H

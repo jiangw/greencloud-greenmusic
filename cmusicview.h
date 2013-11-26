@@ -30,6 +30,9 @@ public:
     void AppendMusic(QString a_qstrFileName);
     void OpenPlayList();
 
+protected:
+    void wheelEvent(QWheelEvent *event);
+
 public slots:
     void SLOT_LoadMusicProc();
     void SLOT_LoadMusicCoverProc();

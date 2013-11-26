@@ -10,5 +10,6 @@
     </qresource>
     <qresource prefix="/img">
         <file alias="/sceneback">res/sceneback.jpg</file>
+        <file alias="defaultcover">res/defaultcover.png</file>
     </qresource>
 </RCC>

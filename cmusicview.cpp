@@ -22,11 +22,12 @@ CMusicView::CMusicView(QWidget *a_pParent)
     m_CMusicTitleFont.setPointSize(18);
 
     m_pMusicTitle = new CTextWidget(false, NULL);
-    m_pMusicTitle->SetText("Double click to open music");
+    m_pMusicTitle->SetEditable(true);
+    m_pMusicTitle->SetWidgetOutline(false);
+    m_pMusicTitle->SetFont(m_CMusicTitleFont);
+    m_pMusicTitle->setVisible(false);
     m_pMusicTitle->setPos(-200, -230);
     m_pScene->addItem(m_pMusicTitle);
-    connect(m_pMusicTitle, SIGNAL(SIGNAL_MouseDoubleClicked()),\
-            this, SLOT(SLOT_LoadMusicProc()));
 
     m_pCover = new CImgWidget(300, 300, NULL);
     m_pScene->addItem(m_pCover);
@@ -100,6 +101,7 @@ CMusicView::CMusicView(QWidget *a_pParent)
     m_pPlayListView->SetHeaderWidget(l_pPlayListTitle);
     m_pPlayListView->SetListOrientation(CWidgetList::VERTICAL);
     m_pPlayListView->SetWidgetOutline(false);
+    m_pPlayListView->SetPageLength(5);
     m_pPlayListView->setPos(m_pArtistPhoto->pos().x() + m_pArtistPhoto->boundingRect().width()\
                             + 50,\
                             m_pMusicTitle->pos().y());
@@ -165,6 +167,20 @@ void CMusicView::OpenPlayList()
                                              l_pMusic->m_qstrMusicTitle,\
                                              l_pMusic->m_qstrArtist);
     }
+    m_pPlayListView->SetPagePos(1);
+}
+
+void CMusicView::wheelEvent(QWheelEvent *event)
+{
+    if(!m_pPlayListView->contains(m_pPlayListView->mapFromScene(\
+                                      this->mapToScene(event->pos()))))
+    {
+        event->ignore();
+    }
+    else
+    {
+        QGraphicsView::wheelEvent(event);
+    }
 }
 
 void CMusicView::SLOT_LoadMusicProc()
@@ -213,8 +229,7 @@ void CMusicView::SLOT_CurrSrcChangeProc()
 {
     QString l_qstrTitle = m_pMediaObj->metaData("TITLE")[0];
     m_pMusicTitle->SetText(l_qstrTitle);
-    m_pMusicTitle->SetFont(m_CMusicTitleFont);
-    m_pMusicTitle->SetWidgetOutline(false);
+    m_pMusicTitle->setVisible(true);
 
     QString l_qstrArtist = m_pMediaObj->metaData("ARTIST")[0];
     m_pArtistName->SetText(l_qstrArtist);
@@ -341,7 +356,14 @@ void CMusicView::AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
 {
     CImgWidget* l_pNewMusicShortCut = new CImgWidget(m_iMusicShortCutSize, m_iMusicShortCutSize,\
                                                      NULL);
-    l_pNewMusicShortCut->SetImg(a_qstrCoverFile);
+    if(a_qstrCoverFile.isNull() || a_qstrCoverFile.isEmpty())
+    {
+        l_pNewMusicShortCut->SetImg(":/img/defaultcover");
+    }
+    else
+    {
+        l_pNewMusicShortCut->SetImg(a_qstrCoverFile);
+    }
     l_pNewMusicShortCut->setToolTip(\
                 QString("%1 - %2").arg(a_qstrMusicTitle).arg(a_qstrArtist));
     m_pPlayListView->AddWidget(l_pNewMusicShortCut);

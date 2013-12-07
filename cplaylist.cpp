@@ -2,6 +2,7 @@
 
 CPlayList::CPlayList()
 {
+    m_blPlaylistChanged = false;
 }
 
 CPlayList::~CPlayList()
@@ -44,11 +45,36 @@ bool CPlayList::AddMusic(QString a_qstrMusicTitle, QString a_qstrArtist,\
         l_pNewMusic->m_qstrCoverImgFile = a_qstrCoverImgFile;
         l_pNewMusic->m_qstrArtistPhotoFile = a_qstrArtistPhotoFile;
         m_CPlayList.append(l_pNewMusic);
+        m_blPlaylistChanged = true;
         return true;
     }
     else
     {
         std::cout << "The song is already in playlist." << std::endl;
+        return false;
+    }
+}
+
+bool CPlayList::RemoveMusic(QString a_qstrMusicTitle, QString a_qstrArtist)
+{
+    int l_iMusicIdx = this->MusicInList(a_qstrMusicTitle, a_qstrArtist);
+    return this->RemoveMusic(l_iMusicIdx);
+}
+
+bool CPlayList::RemoveMusic(int a_iMusicIdx)
+{
+    if(-1 != a_iMusicIdx)
+    {
+        SMusic* l_pDelMusic = m_CPlayList.at(a_iMusicIdx);
+        m_CPlayList.removeAt(a_iMusicIdx);
+        delete l_pDelMusic;
+
+        m_blPlaylistChanged = true;
+
+        return true;
+    }
+    else
+    {
         return false;
     }
 }
@@ -88,6 +114,8 @@ void CPlayList::SavePlayList(QString a_qstrFileName)
     }
 
     l_CFile.close();
+
+    m_blPlaylistChanged = false;
 }
 
 void CPlayList::LoadPlayList(QString a_qstrFileName)
@@ -116,4 +144,6 @@ void CPlayList::LoadPlayList(QString a_qstrFileName)
     }
 
     l_CFile.close();
+
+    m_blPlaylistChanged = false;
 }

@@ -13,6 +13,7 @@
 #include <Phonon/Path>
 #include <QFileDialog>
 #include <QFont>
+#include <QMessageBox>
 
 #include "../GraphicsWidgetLib/csvgwidget.h"
 #include "../GraphicsWidgetLib/cimgwidget.h"
@@ -29,6 +30,7 @@ public:
     void OpenMusic(QString a_qstrFileName, bool a_blPlay = false);
     void AppendMusic(QString a_qstrFileName);
     void OpenPlayList();
+    void SavePlayListCheck();
 
 protected:
     void wheelEvent(QWheelEvent *event);
@@ -47,6 +49,7 @@ public slots:
     void SLOT_AddMusicToPlayListProc();
     void SLOT_SavePlayListProc();
     void SLOT_LoadPlayListProc();
+    void SLOT_NewPlayListProc();
 
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
 
@@ -54,6 +57,7 @@ private:
     void AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
                                         QString a_qstrMusicTitle,\
                                         QString a_qstrArtist);
+    void RemoveMusicFromQueue(QString a_qstrMusicFileName);
     QGraphicsScene* m_pScene;
     CImgWidget* m_pCover;
     CImgWidget* m_pArtistPhoto;
@@ -62,6 +66,7 @@ private:
     CSvgWidget* m_pStopBtn;
     CSvgWidget* m_pNextBtn;
     CSvgWidget* m_pPrevBtn;
+    CSvgWidget* m_pTrash;
     CTextWidget* m_pMusicTitle;
     CTextWidget* m_pArtistName;
     CSvgWidget* m_pAddBtn;

@@ -15,7 +15,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     cmusicview.cpp \
-    cplaybutton.cpp \
     ../GraphicsWidgetLib/cgraphicswidget.cpp \
     ../GraphicsWidgetLib/csvgwidget.cpp \
     ../GraphicsWidgetLib/cimgwidget.cpp \
@@ -27,7 +26,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     cmusicview.h \
     gconfig.h \
-    cplaybutton.h \
     ../GraphicsWidgetLib/cgraphicswidget.h \
     ../GraphicsWidgetLib/csvgwidget.h \
     ../GraphicsWidgetLib/cimgwidget.h \

@@ -16,11 +16,14 @@ class MainWindow : public QMainWindow
     
 public:
     MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+
+protected:
+    void closeEvent(QCloseEvent* event);
 
 private:
     QMenu* m_pFileMenu;
     QAction* m_pOpenAct;
+    QAction* m_pNewPlayListAct;
     QAction* m_pLoadPlayListAct;
     QAction* m_pSavePlayListAct;
     QAction* m_pExitAct;

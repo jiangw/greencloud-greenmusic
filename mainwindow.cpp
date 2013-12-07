@@ -16,6 +16,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_pOpenAct, SIGNAL(triggered()), \
             m_pMusicView, SLOT(SLOT_LoadMusicProc()));
 
+    m_pNewPlayListAct = new QAction(this);
+    m_pNewPlayListAct->setText("&New Playlist");
+    m_pNewPlayListAct->setShortcut(QString("Ctrl+N"));
+    connect(m_pNewPlayListAct, SIGNAL(triggered()),\
+            m_pMusicView, SLOT(SLOT_NewPlayListProc()));
+
     m_pLoadPlayListAct = new QAction(this);
     m_pLoadPlayListAct->setText("&Load Playlist");
     m_pLoadPlayListAct->setShortcut(QString("Ctrl+L"));
@@ -35,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, SLOT(close()));
 
     m_pFileMenu->addAction(m_pOpenAct);
+    m_pFileMenu->addAction(m_pNewPlayListAct);
     m_pFileMenu->addAction(m_pLoadPlayListAct);
     m_pFileMenu->addAction(m_pSavePlayListAct);
     m_pFileMenu->addSeparator();
@@ -43,7 +50,9 @@ MainWindow::MainWindow(QWidget *parent)
     this->setCentralWidget(m_pMusicView);
 }
 
-MainWindow::~MainWindow()
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    
+    m_pMusicView->SavePlayListCheck();
+
+    event->accept();
 }

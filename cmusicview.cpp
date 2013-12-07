@@ -32,10 +32,12 @@ CMusicView::CMusicView(QWidget *a_pParent)
     m_pCover = new CImgWidget(300, 300, NULL);
     m_pScene->addItem(m_pCover);
     m_pCover->setPos(-200, -200);
+    m_pCover->MouseDragSwitch(false);
     connect(m_pCover, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_LoadMusicCoverProc()));
 
     m_pArtistPhoto = new CImgWidget(120, 120, NULL);
+    m_pArtistPhoto->MouseDragSwitch(false);
     m_pScene->addItem(m_pArtistPhoto);
     m_pArtistPhoto->setPos(m_pCover->pos().x() + m_pCover->boundingRect().width() + 10,\
                            -200);
@@ -89,7 +91,7 @@ CMusicView::CMusicView(QWidget *a_pParent)
     m_pAddBtn = new CSvgWidget(":/icon/icon_add", 25, 25, NULL);
     m_pAddBtn->setPos(m_pCover->pos().x() + m_pCover->boundingRect().width() + 3,\
                       m_pCover->pos().y() + m_pCover->boundingRect().height() - 25);
-    m_pAddBtn->setToolTip("Add music to playlist");
+    m_pAddBtn->setToolTip("Add song to playlist");
     m_pScene->addItem(m_pAddBtn);
     connect(m_pAddBtn, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_AddMusicToPlayListProc()));
@@ -98,6 +100,8 @@ CMusicView::CMusicView(QWidget *a_pParent)
     CTextWidget* l_pPlayListTitle = new CTextWidget(false, NULL);
     l_pPlayListTitle->SetWidgetOutline(false);
     l_pPlayListTitle->SetText("Play List");
+    l_pPlayListTitle->SetFont(QFont("URW Chancery L"));
+    l_pPlayListTitle->SetFontSize(14);
     m_pPlayListView->SetHeaderWidget(l_pPlayListTitle);
     m_pPlayListView->SetListOrientation(CWidgetList::VERTICAL);
     m_pPlayListView->SetWidgetOutline(false);
@@ -106,6 +110,12 @@ CMusicView::CMusicView(QWidget *a_pParent)
                             + 50,\
                             m_pMusicTitle->pos().y());
     m_pScene->addItem(m_pPlayListView);
+
+    m_pTrash = new CSvgWidget(":/icon/icon_trash", 80, 90, NULL);
+    m_pTrash->setPos(m_pPlayListView->pos().x() + m_pPlayListView->boundingRect().width() + 20,\
+                     m_pPlayBtn->y() + m_pPlayBtn->boundingRect().height() + 10);
+    m_pTrash->setToolTip("Remove song from playlist");
+    m_pScene->addItem(m_pTrash);
 
     this->centerOn(m_pAddBtn->pos().x() + 50, m_pAddBtn->pos().y() - 80);
 }
@@ -170,6 +180,25 @@ void CMusicView::OpenPlayList()
     m_pPlayListView->SetPagePos(1);
 }
 
+void CMusicView::SavePlayListCheck()
+{
+    if(m_CPlayList.IsChanged())
+    {
+        QMessageBox l_CMsgBox(this->parentWidget());
+        l_CMsgBox.setText("The playlist has been modified.");
+        l_CMsgBox.setInformativeText("Do you want to save it?");
+        l_CMsgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel);
+        l_CMsgBox.setDefaultButton(QMessageBox::Save);
+        l_CMsgBox.setModal(true);
+        l_CMsgBox.setIcon(QMessageBox::Warning);
+        int l_iOption = l_CMsgBox.exec();
+        if(QMessageBox::Save == l_iOption)
+        {
+            this->SLOT_SavePlayListProc();
+        }
+    }
+}
+
 void CMusicView::wheelEvent(QWheelEvent *event)
 {
     if(!m_pPlayListView->contains(m_pPlayListView->mapFromScene(\
@@ -227,16 +256,15 @@ void CMusicView::SLOT_LoadArtistPhotoProc()
 
 void CMusicView::SLOT_CurrSrcChangeProc()
 {
+    QString l_qstrArtist = m_pMediaObj->metaData("ARTIST")[0];
     QString l_qstrTitle = m_pMediaObj->metaData("TITLE")[0];
+    SMusic* l_pMusic = m_CPlayList.GetMusic(l_qstrTitle, l_qstrArtist);
+
     m_pMusicTitle->SetText(l_qstrTitle);
     m_pMusicTitle->setVisible(true);
-
-    QString l_qstrArtist = m_pMediaObj->metaData("ARTIST")[0];
     m_pArtistName->SetText(l_qstrArtist);
     m_pArtistName->setVisible(true);
 
-    //update cover and artist photo
-    SMusic* l_pMusic = m_CPlayList.GetMusic(l_qstrTitle, l_qstrArtist);
     if(NULL != l_pMusic)
     {
         m_pCover->SetImg(l_pMusic->m_qstrCoverImgFile);
@@ -316,6 +344,8 @@ void CMusicView::SLOT_SavePlayListProc()
 
 void CMusicView::SLOT_LoadPlayListProc()
 {
+    this->SavePlayListCheck();
+
     QString l_strFileName = QFileDialog::getOpenFileName(this,
          "Load Play List", "/home/Share/SharedMusic", "Playlist Files (*.pl)");
     if(!l_strFileName.isNull() && !l_strFileName.isEmpty())
@@ -325,26 +355,62 @@ void CMusicView::SLOT_LoadPlayListProc()
     }
 }
 
+void CMusicView::SLOT_NewPlayListProc()
+{
+    this->SavePlayListCheck();
+
+    m_pMediaObj->clearQueue();
+    m_pPlayListView->ResetWidget();
+    m_CPlayList.ClearPlayList();
+}
+
 void CMusicView::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget *a_pWhoAmI)
 {
-    if("CImgWidget" == a_pWhoAmI->WidgetClassName()\
-            && m_pCover->contains(m_pCover->mapFromScene(a_CMouseScenePos)))
+    if("CImgWidget" == a_pWhoAmI->WidgetClassName())
     {
-        int l_iMusicIdx = m_pPlayListView->IndexOf(a_pWhoAmI);
-        if(-1 != l_iMusicIdx)
-        {
-            QList<SMusic *>* l_CQueue = m_CPlayList.GetPlayList();
-            SMusic* l_pMusic = l_CQueue->at(l_iMusicIdx);
-            this->OpenMusic(l_pMusic->m_qstrMusicFile, true);
-            m_pMusicTitle->SetText(l_pMusic->m_qstrMusicTitle);
-            m_pArtistName->SetText(l_pMusic->m_qstrArtist);
-            m_pCover->SetImg(l_pMusic->m_qstrCoverImgFile);
-            m_pArtistPhoto->SetImg(l_pMusic->m_qstrArtistPhotoFile);
-
-            //update play queue
-            for(int i=l_iMusicIdx+1; i<l_CQueue->length(); i++)
+        if(m_pCover->contains(m_pCover->mapFromScene(a_CMouseScenePos)))
+        {//open the song from playlist
+            int l_iMusicIdx = m_pPlayListView->IndexOf(a_pWhoAmI);
+            if(-1 != l_iMusicIdx)
             {
-                this->AppendMusic((l_CQueue->at(i))->m_qstrMusicFile);
+                QList<SMusic *>* l_CQueue = m_CPlayList.GetPlayList();
+                SMusic* l_pMusic = l_CQueue->at(l_iMusicIdx);
+                this->OpenMusic(l_pMusic->m_qstrMusicFile, true);
+                m_pMusicTitle->SetText(l_pMusic->m_qstrMusicTitle);
+                m_pArtistName->SetText(l_pMusic->m_qstrArtist);
+                m_pCover->SetImg(l_pMusic->m_qstrCoverImgFile);
+                m_pArtistPhoto->SetImg(l_pMusic->m_qstrArtistPhotoFile);
+
+                //update play queue
+                for(int i=l_iMusicIdx+1; i<l_CQueue->length(); i++)
+                {
+                    this->AppendMusic((l_CQueue->at(i))->m_qstrMusicFile);
+                }
+            }
+        }
+        else if(m_pTrash->contains(m_pTrash->mapFromScene(a_CMouseScenePos)))
+        {//remove the song from playlist
+            int l_iMusicIdx = m_pPlayListView->IndexOf(a_pWhoAmI);
+            if(-1 != l_iMusicIdx)
+            {
+                SMusic* l_pMusic = m_CPlayList.GetPlayList()->at(l_iMusicIdx);
+                QMessageBox l_CMsgBox(this->parentWidget());
+                l_CMsgBox.setInformativeText(QString("%1 - %2").arg(l_pMusic->m_qstrMusicTitle)\
+                                  .arg(l_pMusic->m_qstrArtist));
+                l_CMsgBox.setText("Remove the song from playlist?");
+                l_CMsgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                l_CMsgBox.setDefaultButton(QMessageBox::Yes);
+                l_CMsgBox.setModal(true);
+                l_CMsgBox.setIcon(QMessageBox::Warning);
+                int l_iOption = l_CMsgBox.exec();
+                if(QMessageBox::Yes == l_iOption)
+                {
+                    this->RemoveMusicFromQueue(m_CPlayList.GetPlayList()->at(l_iMusicIdx)->m_qstrMusicFile);
+                    if(m_CPlayList.RemoveMusic(l_iMusicIdx))
+                    {
+                        m_pPlayListView->RemoveWidget(a_pWhoAmI);
+                    }
+                }
             }
         }
     }
@@ -369,4 +435,18 @@ void CMusicView::AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
     m_pPlayListView->AddWidget(l_pNewMusicShortCut);
     connect(l_pNewMusicShortCut, SIGNAL(SIGNAL_MouseDragRelease(QPointF,CGraphicsWidget*)),\
             this, SLOT(SLOT_MouseDragDropProc(QPointF,CGraphicsWidget*)));
+}
+
+void CMusicView::RemoveMusicFromQueue(QString a_qstrMusicFileName)
+{
+    QList<Phonon::MediaSource> l_CQueue = m_pMediaObj->queue();
+    for(int i=0; i<l_CQueue.length(); i++)
+    {
+        if(l_CQueue[i].fileName() == a_qstrMusicFileName)
+        {
+            l_CQueue.removeAt(i);
+            m_pMediaObj->setQueue(l_CQueue);
+            break;
+        }
+    }
 }

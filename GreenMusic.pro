@@ -21,7 +21,10 @@ SOURCES += main.cpp\
     ../GraphicsWidgetLib/ctextwidget.cpp \
     ../GraphicsWidgetLib/ctexteditor.cpp \
     ../GraphicsWidgetLib/cwidgetlist.cpp \
-    cplaylist.cpp
+    cplaylist.cpp \
+    ../GraphicsWidgetLib/cmessagewidget.cpp \
+    ../GraphicsWidgetLib/cbuttonwidget.cpp \
+    cmenuspot.cpp
 
 HEADERS  += mainwindow.h \
     cmusicview.h \
@@ -32,7 +35,10 @@ HEADERS  += mainwindow.h \
     ../GraphicsWidgetLib/ctextwidget.h \
     ../GraphicsWidgetLib/ctexteditor.h \
     ../GraphicsWidgetLib/cwidgetlist.h \
-    cplaylist.h
+    cplaylist.h \
+    ../GraphicsWidgetLib/cmessagewidget.h \
+    ../GraphicsWidgetLib/cbuttonwidget.h \
+    cmenuspot.h
 
 RESOURCES += \
     res.qrc

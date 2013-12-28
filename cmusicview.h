@@ -19,7 +19,9 @@
 #include "../GraphicsWidgetLib/cimgwidget.h"
 #include "../GraphicsWidgetLib/ctextwidget.h"
 #include "../GraphicsWidgetLib/cwidgetlist.h"
+#include "../GraphicsWidgetLib/cmessagewidget.h"
 #include "cplaylist.h"
+#include "cmenuspot.h"
 
 class CMusicView : public QGraphicsView
 {
@@ -34,6 +36,7 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
 public slots:
     void SLOT_LoadMusicProc();
@@ -47,11 +50,16 @@ public slots:
     void SLOT_MusicNextProc();
     void SLOT_MusicPrevProc();
     void SLOT_AddMusicToPlayListProc();
+    void SLOT_RemoveMusicFromPlayListProc();
     void SLOT_SavePlayListProc();
     void SLOT_LoadPlayListProc();
     void SLOT_NewPlayListProc();
 
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
+    void SLOT_ExitEmit();
+
+signals:
+    void SIGNAL_Exit();
 
 private:
     void AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\
@@ -71,6 +79,7 @@ private:
     CTextWidget* m_pArtistName;
     CSvgWidget* m_pAddBtn;
     CWidgetList* m_pPlayListView;
+    CMenuSpot* m_pMenuSpot;
 
     QFont m_CArtistNameFont;
     QFont m_CMusicTitleFont;
@@ -82,6 +91,9 @@ private:
     CPlayList m_CPlayList;
 
     int m_iMusicShortCutSize;
+
+    int m_iDelMusicIdx;
+    CGraphicsWidget* m_pDelMusicShortcut;
 };
 
 #endif // CMUSICVIEW_H

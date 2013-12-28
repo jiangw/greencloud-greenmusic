@@ -7,7 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
 //    this->setWindowFlags(Qt::FramelessWindowHint);
 
     m_pMusicView = new CMusicView(this);
-
+    this->menuBar()->setVisible(false);
+    connect(m_pMusicView, SIGNAL(SIGNAL_Exit()),\
+            this, SLOT(close()));
+/*
     m_pFileMenu = this->menuBar()->addMenu("&File");
 
     m_pOpenAct = new QAction(this);
@@ -46,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_pFileMenu->addAction(m_pSavePlayListAct);
     m_pFileMenu->addSeparator();
     m_pFileMenu->addAction(m_pExitAct);
-
+*/
     this->setCentralWidget(m_pMusicView);
 }
 

@@ -8,6 +8,13 @@
         <file alias="icon_prev">res/icon_prev.svg</file>
         <file alias="icon_stop">res/icon_stop.svg</file>
         <file alias="icon_trash">res/icon_trash.svg</file>
+        <file alias="icon_greenmusic">res/AppIcon.svg</file>
+        <file alias="icon_start">res/Note_Start.svg</file>
+        <file alias="icon_exit">res/Note_Exit.svg</file>
+        <file alias="icon_loadpl">res/Note_LoadPL.svg</file>
+        <file alias="icon_newpl">res/Note_NewPL.svg</file>
+        <file alias="icon_open">res/Note_OpenMusic.svg</file>
+        <file alias="icon_savepl">res/Note_SavePL.svg</file>
     </qresource>
     <qresource prefix="/img">
         <file alias="/sceneback">res/sceneback.jpg</file>

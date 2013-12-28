@@ -31,7 +31,7 @@ CMusicView::CMusicView(QWidget *a_pParent)
 
     m_pCover = new CImgWidget(300, 300, NULL);
     m_pScene->addItem(m_pCover);
-    m_pCover->setPos(-200, -200);
+    m_pCover->setPos(m_pMusicTitle->pos().x(), m_pMusicTitle->pos().y() + 30);
     m_pCover->MouseDragSwitch(false);
     connect(m_pCover, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_LoadMusicCoverProc()));
@@ -40,7 +40,7 @@ CMusicView::CMusicView(QWidget *a_pParent)
     m_pArtistPhoto->MouseDragSwitch(false);
     m_pScene->addItem(m_pArtistPhoto);
     m_pArtistPhoto->setPos(m_pCover->pos().x() + m_pCover->boundingRect().width() + 10,\
-                           -200);
+                           m_pCover->pos().y());
     connect(m_pArtistPhoto, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_LoadArtistPhotoProc()));
 
@@ -113,11 +113,27 @@ CMusicView::CMusicView(QWidget *a_pParent)
 
     m_pTrash = new CSvgWidget(":/icon/icon_trash", 80, 90, NULL);
     m_pTrash->setPos(m_pPlayListView->pos().x() + m_pPlayListView->boundingRect().width() + 20,\
-                     m_pPlayBtn->y() + m_pPlayBtn->boundingRect().height() + 10);
+                     m_pPlayBtn->y() + m_pPlayBtn->boundingRect().height() + 40);
     m_pTrash->setToolTip("Remove song from playlist");
     m_pScene->addItem(m_pTrash);
 
-    this->centerOn(m_pAddBtn->pos().x() + 50, m_pAddBtn->pos().y() - 80);
+    m_pMenuSpot = new CMenuSpot(NULL);
+    m_pMenuSpot->setPos(-290, m_pTrash->pos().y() + 20);
+    m_pScene->addItem(m_pMenuSpot);
+    connect(m_pMenuSpot, SIGNAL(SIGNAL_OpenMusic()),\
+            this, SLOT(SLOT_LoadMusicProc()));
+    connect(m_pMenuSpot, SIGNAL(SIGNAL_NewPL()),\
+            this, SLOT(SLOT_NewPlayListProc()));
+    connect(m_pMenuSpot, SIGNAL(SIGNAL_LoadPL()),\
+            this, SLOT(SLOT_LoadPlayListProc()));
+    connect(m_pMenuSpot, SIGNAL(SIGNAL_SavePL()),\
+            this, SLOT(SLOT_SavePlayListProc()));
+    connect(m_pMenuSpot, SIGNAL(SIGNAL_Exit()),\
+            this, SLOT(SLOT_ExitEmit()));
+
+    this->centerOn(150, 25);
+    m_iDelMusicIdx = -1;
+    m_pDelMusicShortcut = NULL;
 }
 
 void CMusicView::InitPhonon()
@@ -212,13 +228,40 @@ void CMusicView::wheelEvent(QWheelEvent *event)
     }
 }
 
+void CMusicView::keyPressEvent(QKeyEvent *event)
+{
+    if(event->modifiers() == Qt::ControlModifier)
+    {
+        switch(event->key())
+        {
+        case Qt::Key_O:
+            this->SLOT_LoadMusicProc();
+            break;
+        case Qt::Key_N:
+            this->SLOT_NewPlayListProc();
+            break;
+        case Qt::Key_L:
+            this->SLOT_LoadPlayListProc();
+            break;
+        case Qt::Key_S:
+            this->SLOT_SavePlayListProc();
+            break;
+        case Qt::Key_Q:
+            emit this->SIGNAL_Exit();
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 void CMusicView::SLOT_LoadMusicProc()
 {
     QString l_strFileName = QFileDialog::getOpenFileName(this,
          "Open Music", "/home/Share/SharedMusic", "Music Files (*.mp3 *.flac *.wav)");
     if(!l_strFileName.isNull() && !l_strFileName.isEmpty())
     {
-        this->OpenMusic(l_strFileName);
+        this->OpenMusic(l_strFileName, true);
     }
 }
 
@@ -332,6 +375,21 @@ void CMusicView::SLOT_AddMusicToPlayListProc()
     }
 }
 
+void CMusicView::SLOT_RemoveMusicFromPlayListProc()
+{
+    if(-1 == m_iDelMusicIdx || NULL == m_pDelMusicShortcut)
+    {
+        return;
+    }
+    this->RemoveMusicFromQueue(m_CPlayList.GetPlayList()->at(m_iDelMusicIdx)->m_qstrMusicFile);
+    if(m_CPlayList.RemoveMusic(m_iDelMusicIdx))
+    {
+        m_pPlayListView->RemoveWidget(m_pDelMusicShortcut);
+    }
+    m_iDelMusicIdx = -1;
+    m_pDelMusicShortcut = NULL;
+}
+
 void CMusicView::SLOT_SavePlayListProc()
 {
     QString l_strFileName = QFileDialog::getSaveFileName(this,
@@ -394,26 +452,30 @@ void CMusicView::SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidge
             if(-1 != l_iMusicIdx)
             {
                 SMusic* l_pMusic = m_CPlayList.GetPlayList()->at(l_iMusicIdx);
-                QMessageBox l_CMsgBox(this->parentWidget());
-                l_CMsgBox.setInformativeText(QString("%1 - %2").arg(l_pMusic->m_qstrMusicTitle)\
-                                  .arg(l_pMusic->m_qstrArtist));
-                l_CMsgBox.setText("Remove the song from playlist?");
-                l_CMsgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                l_CMsgBox.setDefaultButton(QMessageBox::Yes);
-                l_CMsgBox.setModal(true);
-                l_CMsgBox.setIcon(QMessageBox::Warning);
-                int l_iOption = l_CMsgBox.exec();
-                if(QMessageBox::Yes == l_iOption)
-                {
-                    this->RemoveMusicFromQueue(m_CPlayList.GetPlayList()->at(l_iMusicIdx)->m_qstrMusicFile);
-                    if(m_CPlayList.RemoveMusic(l_iMusicIdx))
-                    {
-                        m_pPlayListView->RemoveWidget(a_pWhoAmI);
-                    }
-                }
+                CMessageWidget* l_pMsgBox = new CMessageWidget(m_pScene);
+                l_pMsgBox->SetInfo(QString("%1 - %2").arg(l_pMusic->m_qstrMusicTitle)\
+                                   .arg(l_pMusic->m_qstrArtist));
+                l_pMsgBox->SetQuestion("Remove this song from playlist?");
+                l_pMsgBox->SetMsgType(CMessageWidget::MS_YESNO);
+                l_pMsgBox->SetMsgBoxWidth(300);
+//                l_pMsgBox->SetMsgBoxPos(a_pWhoAmI->pos().x() - l_pMsgBox->GetMsgBoxWidth(),\
+//                                        a_pWhoAmI->pos().y() + a_pWhoAmI->boundingRect().height() / 2);
+                QPointF l_CPos = a_pWhoAmI->pos();
+                l_CPos = a_pWhoAmI->mapToScene(a_pWhoAmI->pos());
+                l_pMsgBox->SetMsgBoxPos(m_pTrash->pos().x() - l_pMsgBox->GetMsgBoxWidth(),\
+                                        m_pTrash->pos().y());
+                m_iDelMusicIdx = l_iMusicIdx;
+                m_pDelMusicShortcut = a_pWhoAmI;
+                connect(l_pMsgBox, SIGNAL(SIGNAL_Ok()),\
+                        this, SLOT(SLOT_RemoveMusicFromPlayListProc()));
             }
         }
     }
+}
+
+void CMusicView::SLOT_ExitEmit()
+{
+    emit this->SIGNAL_Exit();
 }
 
 void CMusicView::AddMusicShortcutToPlayListView(QString a_qstrCoverFile,\

@@ -8,8 +8,8 @@ CMenuSpot::CMenuSpot(CGraphicsWidget *a_pParent)
     m_iStartIconWidth = qFloor(100 * l_dRatioWid);
     m_iOpenIconWidth = qFloor(90 * l_dRatioWid);
     m_iNewPLIconWidth = qFloor(90 * l_dRatioWid);
-    m_iLoadPLIconWidth = qFloor(150 * l_dRatioWid);
-    m_iSavePLIconWidth = qFloor(150 * l_dRatioWid);
+    m_iLoadPLIconWidth = qFloor(120 * l_dRatioWid);
+    m_iSavePLIconWidth = qFloor(120 * l_dRatioWid);
     m_iExitIconWidth = qFloor(80 * l_dRatioWid);
     m_iWidgetHeight = qFloor(120 * l_dRatioHgt);
 
@@ -21,6 +21,10 @@ CMenuSpot::CMenuSpot(CGraphicsWidget *a_pParent)
                          -(m_pStartIcon->boundingRect().height() - m_iWidgetHeight));
     connect(m_pStartIcon, SIGNAL(SIGNAL_LeftButtonClicked()),\
             this, SLOT(SLOT_MenuSpotSwitchProc()));
+
+    m_pPlayStat = new CSvgWidget(":/icon/icon_stop", 15, 15, this);
+    m_pPlayStat->setPos(m_pStartIcon->pos().x() + m_pStartIcon->boundingRect().width(),\
+                        m_pStartIcon->pos().y());
 
     int x = m_iStartIconWidth;
     m_pOpenIcon = new CSvgWidget(ICON_OPEN,\
@@ -83,6 +87,24 @@ CMenuSpot::CMenuSpot(CGraphicsWidget *a_pParent)
     }
 
     this->InitBoundingRect();
+}
+
+void CMenuSpot::SetPlayStat(EPlayStat a_EPlayStat)
+{
+    switch(a_EPlayStat)
+    {
+    case PLAY:
+        m_pPlayStat->SetSvgFile(":/icon/icon_play");
+        break;
+    case PAUSE:
+        m_pPlayStat->SetSvgFile(":/icon/icon_pause");
+        break;
+    case STOP:
+        m_pPlayStat->SetSvgFile(":/icon/icon_stop");
+        break;
+    default:
+        break;
+    }
 }
 
 int CMenuSpot::WidgetWidth()

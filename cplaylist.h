@@ -27,7 +27,11 @@ public:
     {return &m_CPlayList;}
     bool IsChanged()\
     {return m_blPlaylistChanged;}
+    SMusic* GetFirstMusic();
     SMusic* GetMusic(QString a_qstrMusicTitle, QString a_qstrArtistName);
+    SMusic* GetNextMusic(QString a_qstrPrevMusicTitle, QString a_qstrPrevArtistName);
+    SMusic* GetRandNextMusic(QString a_qstrPrevMusicTitle, QString a_qstrPrevArtistName);
+    bool IsEnd(QString a_qstrMusicTitle, QString a_qstrArtistName);
 
     bool AddMusic(QString a_qstrMusicTitle, QString a_qstrArtist,\
                   QString a_qstrMusicFile, QString a_qstrCoverImgFile,\

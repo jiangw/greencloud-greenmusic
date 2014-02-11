@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="190"
+   width="307"
    height="190"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="icon_add.svg">
+   sodipodi:docname="icon_normal.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.26776925"
-     inkscape:cx="484.98993"
-     inkscape:cy="358.89"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="442.53319"
+     inkscape:cy="209.50013"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -51,20 +51,21 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-862.36218)">
+     transform="translate(0,-862.36217)">
     <g
-       id="g3045"
-       transform="matrix(0.99836695,0,0,0.99852434,-853.25508,473.45906)">
+       id="g3837"
+       transform="matrix(1.2122455,0,0,1.2612009,-431.1525,-450.48736)">
       <path
          inkscape:connector-curvature="0"
-         id="path3770-6-9"
-         d="m 949.34309,408.63182 0,151.94604"
-         style="fill:none;stroke:#008e00;stroke-width:36.36149597;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+         id="path3770-6-9-4-4"
+         d="m 592.30015,1115.7397 -228.6554,0"
+         style="fill:none;stroke:#008e00;stroke-width:30;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       <path
+         sodipodi:nodetypes="ccc"
          inkscape:connector-curvature="0"
-         id="path3770-6-9-4"
-         d="m 1025.7806,479.47898 -151.94602,0"
-         style="fill:none;stroke:#008e00;stroke-width:36.36149597;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+         id="path3778-3-0"
+         d="m 564.13245,1078.2715 39.07574,39.9735 -39.52416,33.6814 z"
+         style="fill:#008e00;fill-opacity:1;stroke:#008e00;stroke-width:6.96126795;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
   </g>
 </svg>

@@ -27,6 +27,8 @@ class CMusicView : public QGraphicsView
 {
     Q_OBJECT
 public:
+    enum EPlayOrder{PO_NORMAL, PO_REPEAT, PO_REPEATONE, PO_SHUFFLE};
+
     CMusicView(QWidget* a_pParent);
     void InitPhonon();
     void OpenMusic(QString a_qstrFileName, bool a_blPlay = false);
@@ -42,18 +44,18 @@ public slots:
     void SLOT_LoadMusicProc();
     void SLOT_LoadMusicCoverProc();
     void SLOT_LoadArtistPhotoProc();
-    void SLOT_CurrSrcChangeProc();
-    void SLOT_CurrStateChangeProc(Phonon::State a_ENewState,Phonon::State a_EOldState);
+    void SLOT_CurrSrcChangeProc(const Phonon::MediaSource & a_CNewSource);
     void SLOT_MusicPlayProc();
     void SLOT_MusicPauseProc();
     void SLOT_MusicStopProc();
     void SLOT_MusicNextProc();
-    void SLOT_MusicPrevProc();
+    void SLOT_SequenceChangeProc();
     void SLOT_AddMusicToPlayListProc();
     void SLOT_RemoveMusicFromPlayListProc();
     void SLOT_SavePlayListProc();
     void SLOT_LoadPlayListProc();
     void SLOT_NewPlayListProc();
+    void SLOT_PlayStatChangedProc(Phonon::State a_ENewStat,Phonon::State a_EOldStat);
 
     void SLOT_MouseDragDropProc(QPointF a_CMouseScenePos, CGraphicsWidget* a_pWhoAmI);
     void SLOT_ExitEmit();
@@ -73,13 +75,14 @@ private:
     CSvgWidget* m_pPauseBtn;
     CSvgWidget* m_pStopBtn;
     CSvgWidget* m_pNextBtn;
-    CSvgWidget* m_pPrevBtn;
+    CSvgWidget* m_pSequenceBtn;
     CSvgWidget* m_pTrash;
     CTextWidget* m_pMusicTitle;
     CTextWidget* m_pArtistName;
     CSvgWidget* m_pAddBtn;
     CWidgetList* m_pPlayListView;
     CMenuSpot* m_pMenuSpot;
+    EPlayOrder m_EPlayOrder;
 
     QFont m_CArtistNameFont;
     QFont m_CMusicTitleFont;

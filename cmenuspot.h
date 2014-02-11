@@ -16,7 +16,9 @@ class CMenuSpot : public CGraphicsWidget
     Q_OBJECT
 
 public:
+    enum EPlayStat{PLAY, PAUSE, STOP};
     CMenuSpot(CGraphicsWidget* a_pParent);
+    void SetPlayStat(EPlayStat a_EPlayStat);
 
     //override from CGraphicsWidget
     int WidgetWidth();
@@ -52,6 +54,8 @@ private:
     int m_iExitIconWidth;
     CSvgWidget* m_pExitIcon;
     int m_iWidgetHeight;
+
+    CSvgWidget* m_pPlayStat;
 
     bool m_blCollapsed;
 };

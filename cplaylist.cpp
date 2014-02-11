@@ -19,6 +19,11 @@ void CPlayList::ClearPlayList()
     m_CPlayList.clear();
 }
 
+SMusic* CPlayList::GetFirstMusic()
+{
+    return m_CPlayList[0];
+}
+
 SMusic* CPlayList::GetMusic(QString a_qstrMusicTitle, QString a_qstrArtistName)
 {
     int l_iMusicIdx = this->MusicInList(a_qstrMusicTitle, a_qstrArtistName);
@@ -29,6 +34,43 @@ SMusic* CPlayList::GetMusic(QString a_qstrMusicTitle, QString a_qstrArtistName)
     else
     {
         return m_CPlayList[l_iMusicIdx];
+    }
+}
+
+SMusic* CPlayList::GetNextMusic(QString a_qstrPrevMusicTitle, QString a_qstrPrevArtistName)
+{
+    int l_iMusicIdx = this->MusicInList(a_qstrPrevMusicTitle, a_qstrPrevArtistName);
+    if(-1 == l_iMusicIdx || l_iMusicIdx + 1 >= m_CPlayList.length())
+    {
+        return NULL;
+    }
+    else
+    {
+        return m_CPlayList[l_iMusicIdx + 1];
+    }
+}
+
+SMusic* CPlayList::GetRandNextMusic(QString a_qstrPrevMusicTitle, QString a_qstrPrevArtistName)
+{
+    int l_iMusicIdx = this->MusicInList(a_qstrPrevMusicTitle, a_qstrPrevArtistName);
+    int l_iRandIdx = l_iMusicIdx;
+    while(l_iRandIdx == l_iMusicIdx)
+    {
+        l_iRandIdx = qrand() % m_CPlayList.length();
+    }
+    return m_CPlayList[l_iRandIdx];
+}
+
+bool CPlayList::IsEnd(QString a_qstrMusicTitle, QString a_qstrArtistName)
+{
+    int l_iMusicIdx = this->MusicInList(a_qstrMusicTitle, a_qstrArtistName);
+    if(l_iMusicIdx + 1 == m_CPlayList.length())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
